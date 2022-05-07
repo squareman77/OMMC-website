@@ -1,0 +1,121 @@
+import katex from 'katex'
+import { useState } from 'react';
+import Head from 'next/head'
+import Image from 'next/image'
+
+export default () => {
+    let index = 0
+    console.log(index)
+
+    const slides = [
+        {
+            "question": "At which value of x is f(x) = 0?",
+            "type": "short"
+        },
+        {
+            "question": "What is the length of the arc covered by the parametric equation cos t and something",
+            "type": "short"
+        }
+    ]
+    
+    function slide(direction) { //false = left, true = right
+        if (typeof window === 'undefined') return
+
+        const slideElmns = document.getElementById("screen").childNodes
+
+        if (!direction) { //left
+            if (index == 0) return
+
+            slideElmns[index].classList.add("rightSlide")
+            slideElmns[index].classList.remove("selected")
+            index--
+            console.log(index)
+            slideElmns[index].classList.remove("leftSlide")
+            slideElmns[index].classList.add("selected")
+        } else {
+            if (index == slides.length-1) return
+
+            slideElmns[index].classList.add("leftSlide")
+            slideElmns[index].classList.remove("selected")
+            index++
+            console.log(index)
+            slideElmns[index].classList.remove("rightSlide")
+            slideElmns[index].classList.add("selected")
+        }
+    }
+    
+
+    function answer(e) {
+        // if (typeof window !== undefined) {
+        //     katex.render(`${e.target.value}`, document.getElementById("katex-outp"), {
+        //         throwOnError: false,
+        //         displayMode: true
+        //     })
+        // }
+    }
+
+    return <>
+        <Head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        </Head>
+        <style global jsx>{`
+            html,
+            body,
+            div#__next {
+                height: 100vh;
+            }
+
+            .leftSlide {
+                transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+                transform: translateX(-300vw);
+            }
+
+            .selected {
+                transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+                transform: translateX(0vw);
+            }
+
+            .hide {
+                display: none;
+            }
+
+            .rightSlide {
+                transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+                transform: translateX(300vw);
+            }
+        `}</style>
+
+        <div className='z-10 bottom-0 w-full px-4 py-4 fixed flex justify-between'>
+            <button onClick = {() => slide(false)}  className='rounded-full transition bg-white hover:bg-gray-200'>
+                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <button onClick = {() => slide(true)}className='rounded-full transition bg-white hover:bg-gray-200'>
+                <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </button>
+        </div>
+        
+        <div id = "screen" className='w-screen h-screen'>
+            {
+                slides.map((s, i) =>
+                    <div className={`${i == 0?"":"rightSlide"} text-center absolute inset-0 h-screen flex items-center justify-center`}>
+                        <div className='w-2/3'>
+                            <h1 className='text-4xl font-semibold'>Q{i+1}</h1>
+                            <p className='text-2xl my-4 text-center w-full mx-auto'>{s.question}</p>
+                            {/* small input */}
+                            <input type="text" onChange={answer} className="outline-none w-full text-4xl p-3 border-4 my-4 border-gray-300 border-solid"/>
+                            {/* <form className="text-left">
+                                {
+                                    ["1", "1/2", "3", "5"].map((e, i) => <div key={`${i}`}>
+                                        <input type="radio" id={`${i}`} name = "question"/>
+                                        <label for={`${i}`} className="mx-2 text-xl">{e}</label>
+                                    </div>)
+                                }
+                            </form> */}
+                            {/* <div id = "katex-outp">abcd</div> */}
+                        </div>
+                    </div>
+                )
+            }
+        </div>
+    </>
+}
